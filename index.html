@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TYPE-A-05 Gaming Platform</title>
+<link rel="icon" href="images/favicon.png">
+<!-- CSS文件引用 - 使用相对路径 -->
+<link rel="stylesheet" href="css/swiper-bundle.min.css">
+<link rel="stylesheet" href="css/font-awesome.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/effect-carousel.min.css">
+<link rel="stylesheet" href="css/theme_new_v1.css">
+<style>
+.loading-spinner {
+    text-align: center;
+    padding: 50px;
+    color: #666;
+    font-size: 16px;
+}
+.error-message {
+    text-align: center;
+    padding: 50px;
+    color: #e74c3c;
+    font-size: 14px;
+}
+.no-games {
+    text-align: center;
+    padding: 50px;
+    color: #999;
+    font-size: 14px;
+}
+.game-card {
+    transition: transform 0.3s ease;
+}
+.game-card:hover {
+    transform: scale(1.05);
+}
+.auth-required {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+/* 游戏logo区域样式优化 */
+.g-logo.dflex-ac-jc h2 {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div id="app" data-v-app="">
+	<div class="org_bg">
+		<div class="org_new">
+			<div>
+				<nav class="gnb">
+				<div class="gnb-title">
+					<div class="top-gnb">
+						<div class="gnb-top">
+						<img src="images/demo.png" alt="" class="logo">
+						
+						<!--로그인 메뉴 - 未登录状态-->
+						<ul class="gnb-menu" id="loginMenu">
+							<li>
+								<a href="login.html" class="login-btn">
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+								<i class="fa fa-sign-in"></i> 로그인
+								</a>
+							</li>
+							<li>
+								<a href="register.html" class="signup-btn">
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<i class="fa fa-user-plus"></i> 회원가입
+								</a>
+							</li>
+						</ul>
+						<!--로그아웃 메뉴 - 已登录状态-->
+						<ul class="gnb-menu out" id="loggedInMenu" style="display: none;">
+							<div class="loginForm">
+									<a href="#" id="userNameLink" title="" class="momey">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+										  <path class="icon01" id="level" d="M20.485,3.515A12,12,0,0,0,3.515,20.485,12,12,0,0,0,20.485,3.515ZM5.208,20.123A6.865,6.865,0,0,1,12,14.082a6.84,6.84,0,0,1,6.792,6.042,10.572,10.572,0,0,1-13.584,0ZM12,12.633a3.645,3.645,0,1,1,3.645-3.645A3.649,3.649,0,0,1,12,12.633Zm8,6.3a8.267,8.267,0,0,0-5.175-5.763,5.051,5.051,0,1,0-5.654,0A8.259,8.259,0,0,0,4,18.933a10.594,10.594,0,1,1,16.006,0Zm0,0"></path>
+										</svg>
+										<span title="" id="userName">사용자</span>
+									</a>
+									<span class="momey">
+										<svg xmlns="http://www.w3.org/2000/svg" id="coin" viewBox="0 0 24 24">
+										<path class="icon01" d="M24,12A12,12,0,1,0,12,24,12,12,0,0,0,24,12Zm-22.564.706H3.7a8.293,8.293,0,0,0,1.934,4.661l-1.6,1.6a10.544,10.544,0,0,1-2.6-6.262Zm2.6-7.673,1.6,1.6A8.293,8.293,0,0,0,3.7,11.294H1.436A10.544,10.544,0,0,1,4.034,5.032Zm18.53,6.262H20.3a8.293,8.293,0,0,0-1.934-4.661l1.6-1.6A10.544,10.544,0,0,1,22.564,11.294ZM12,18.918A6.918,6.918,0,1,1,18.918,12,6.925,6.925,0,0,1,12,18.918ZM17.366,5.635A8.293,8.293,0,0,0,12.706,3.7V1.436a10.544,10.544,0,0,1,6.262,2.6ZM11.294,3.7A8.293,8.293,0,0,0,6.634,5.635l-1.6-1.6a10.544,10.544,0,0,1,6.262-2.6ZM6.634,18.365A8.293,8.293,0,0,0,11.294,20.3v2.265a10.544,10.544,0,0,1-6.262-2.6ZM12.706,20.3a8.293,8.293,0,0,0,4.661-1.934l1.6,1.6a10.544,10.544,0,0,1-6.262,2.6V20.3Zm5.659-2.933A8.293,8.293,0,0,0,20.3,12.706h2.265a10.544,10.544,0,0,1-2.6,6.262Z" fill="#0cf"></path>
+										<path class="icon02" d="M194.989,151.209h-1.644a.77.77,0,1,1,.006-1.541l1.577.012a1.115,1.115,0,0,1,.934.516l.008.013a.706.706,0,0,0,1.19-.76l-.009-.013a2.525,2.525,0,0,0-2.179-1.167v-.738a.706.706,0,1,0-1.412,0v.727a2.183,2.183,0,1,0-.116,4.364h1.644a.77.77,0,1,1-.006,1.541l-1.721-.013a1.117,1.117,0,0,1-.851-.4.706.706,0,1,0-1.085.9,2.526,2.526,0,0,0,1.926.911l.209,0v.738a.706.706,0,1,0,1.412,0v-.727a2.183,2.183,0,1,0,.116-4.364Z" transform="translate(-182.167 -139.915)" fill="#0cf"></path>
+										</svg> 
+										<span class="mb_point" id="userBalance">0</span> 원</span>
+									<span class="momey" style="cursor:pointer;">
+										<svg xmlns="http://www.w3.org/2000/svg" id="mileage" width="24" height="24" viewBox="0 0 24 24">
+											<path class="icon01" d="M24,12A12,12,0,1,0,12,24,12,12,0,0,0,24,12Zm-22.564.706H3.7a8.293,8.293,0,0,0,1.934,4.661l-1.6,1.6a10.544,10.544,0,0,1-2.6-6.262Zm2.6-7.673,1.6,1.6A8.293,8.293,0,0,0,3.7,11.294H1.436A10.544,10.544,0,0,1,4.034,5.032Zm18.53,6.262H20.3a8.293,8.293,0,0,0-1.934-4.661l1.6-1.6A10.544,10.544,0,0,1,22.564,11.294ZM12,18.918A6.918,6.918,0,1,1,18.918,12,6.925,6.925,0,0,1,12,18.918ZM17.366,5.635A8.293,8.293,0,0,0,12.706,3.7V1.436a10.544,10.544,0,0,1,6.262,2.6ZM11.294,3.7A8.293,8.293,0,0,0,6.634,5.635l-1.6-1.6a10.544,10.544,0,0,1,6.262-2.6ZM6.634,18.365A8.293,8.293,0,0,0,11.294,20.3v2.265a10.544,10.544,0,0,1-6.262-2.6ZM12.706,20.3a8.293,8.293,0,0,0,4.661-1.934l1.6,1.6a10.544,10.544,0,0,1-6.262,2.6V20.3Zm5.659-2.933A8.293,8.293,0,0,0,20.3,12.706h2.265a10.544,10.544,0,0,1-2.6,6.262Z"></path>
+											<path class="icon02" d="M10.708-6.116A2.9,2.9,0,0,0,7.81-9a2.853,2.853,0,0,0-2.177.995A2.853,2.853,0,0,0,3.456-9a2.9,2.9,0,0,0-2.9,2.884v3.633a.714.714,0,0,0,.721.721.711.711,0,0,0,.706-.721V-6.116A1.465,1.465,0,0,1,3.456-7.573,1.452,1.452,0,0,1,4.912-6.116v3.633a.723.723,0,0,0,.721.721.711.711,0,0,0,.706-.721V-6.116A1.465,1.465,0,0,1,7.81-7.573,1.465,1.465,0,0,1,9.281-6.116v3.633a.711.711,0,0,0,.706.721.723.723,0,0,0,.721-.721v-3.5a.13.13,0,0,0-.014-.072C10.708-6.073,10.708-6.088,10.708-6.116Z" transform="translate(6.367 17.381)"></path>
+										</svg>
+									<span class="mb_mileage" id="userMileage">0</span> M</span>
+									<a href="#" id="personalCenterBtn" class="memo" style="text-decoration: none; color: inherit;">
+										<div style="display: flex; align-items: center; gap: 5px;">
+											<i class="fa fa-user" style="font-size: 14px;"></i>
+											<span style="font-size: 12px;">개인중심</span>
+										</div>
+									</a>
+									<a href="#" class="memo" data-toggle="modal" data-target="#memoModal">
+										<div class="mail">
+											<span class="momey">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+											  <g id="email" transform="translate(-1471 -27.778)">
+												<rect transform="translate(1471 27.778)" fill="#fff" opacity="0"></rect>
+												<path class="icon01" d="M21.75,59.882H2.25A2.252,2.252,0,0,0,0,62.132v13.5a2.252,2.252,0,0,0,2.25,2.25h19.5A2.252,2.252,0,0,0,24,75.632v-13.5A2.252,2.252,0,0,0,21.75,59.882Zm0,1.5a.746.746,0,0,1,.287.058L12,70.14,1.962,61.44a.747.747,0,0,1,.287-.058Zm0,15H2.25a.751.751,0,0,1-.75-.75V63.025L11.509,71.7a.751.751,0,0,0,.983,0L22.5,63.025V75.632A.751.751,0,0,1,21.75,76.382Z" transform="translate(1471 -28.882)" fill="#c2ff00"></path>
+											  </g>
+											</svg>
+											</span>
+											<div class="new memoCnt">0</div>
+										</div>
+									</a>
+								</div>
+							<li>
+								<a href="#" id="logoutBtn" class="logout-btn">
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+									<i class="fa fa-sign-out"></i> 로그아웃
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<ul class="gnb-list">
+				<li class="gnb-item"><a href="#casino">카지노</a></li>
+				<li class="gnb-item"><a href="#slot">슬롯</a></li>
+				<li class="gnb-item"><a href="#sports">스포츠</a></li>
+			</ul>
+			</nav>
+			</div>
+			
+			<!-- Main Carousel Section -->
+			<section class="kv">
+			<div class="inner_bg_grey">
+				<div class="swiper_main">
+					<div class="swiper-wrapper">
+						<div class="swiper-slide">
+							<div class="swiper-carousel-animate-opacity">
+								<img src="images/A_04_main01.png" alt="">
+								<div class="slide-content">
+									<h2>국내 최대 온라인 카지노</h2>
+									<p>방문해주셔서 감사합니다</p>
+								</div>
+							</div>
+						</div>
+						<div class="swiper-slide">
+							<div class="swiper-carousel-animate-opacity">
+								<img src="images/A_04_main02.png" alt="">
+								<div class="slide-content">
+									<h2>가입만 해도 한도없는</h2>
+									<p>카지노를 경험해 보세요</p>
+								</div>
+							</div>
+						</div>
+						<div class="swiper-slide">
+							<div class="swiper-carousel-animate-opacity">
+								<img src="images/A_04_main03.png" alt="">
+								<div class="slide-content">
+									<h2>모든종목 온라인 카지노</h2>
+									<p>페이백 최대 10% 지급</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				<div class="swiper-button-prev"></div>
+				<div class="swiper-button-next"></div>
+				<div class="swiper-pagination"></div>
+			</div>
+			</div></section>
+			
+			<!-- Category Section -->
+			<section class="category">
+				<h2 class="title_red">category</h2>
+				<ul>
+					<li>
+						<div class="img_wrap">
+							<a href="#casino">
+								<img src="images/A-04_icon01.png" alt="">
+							</a>
+						</div>
+						<h3>카지노</h3>
+					</li>
+					<li>
+						<div class="img_wrap">
+							<a href="#slot">
+								<img src="images/A-04_icon02.png" alt="">
+							</a>
+						</div>
+						<h3>슬롯</h3>
+					</li>
+					<li>
+						<div class="img_wrap">
+							<a href="#sports">
+								<img src="images/A-04_icon03.png" alt="">
+							</a>
+						</div>
+						<h3>스포츠</h3>
+					</li>
+				</ul>
+			</section>
+			
+			<!-- Hot Games Section -->
+			<section class="hot_games">
+				<div class="inner inner_bg_grey">
+					<h2 class="title_green">hot games</h2>
+					<div class="swiper hotSwiper swiper-initialized swiper-horizontal swiper-autoheight new-swiper-slide swiper-backface-hidden" id="hotGamesContainer">
+						<div class="loading-spinner">인기 게임 로딩 중...</div>
+					</div>
+				</div>
+			</section>
+			
+			<!-- Gambling Brand Section -->
+			<section class="gambling_brand">
+			<h2 class="title_green">gambling brand</h2>
+			<div class="swiper brandSwiper swiper-initialized swiper-horizontal swiper-autoheight new-swiper-slide swiper-backface-hidden">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide swiper-slide-active">
+						<ul>
+							<li><strong class="num">1</strong>
+							<div class="img_wrap">
+								<img src="images/brand1.png" alt="Oddin">
+							</div>
+							<div class="contents_wrap">
+								<strong>리그오브레전드</strong><span>오딘</span>
+							</div>
+							</li>
+							<li><strong class="num">2</strong>
+							<div class="img_wrap">
+								<img src="images/brand3.png" alt="Pragmatic Play">
+							</div>
+							<div class="contents_wrap">
+								<strong>슬롯</strong><span>프라그마틱 플레이</span>
+							</div>
+							</li>
+							<li><strong class="num">3</strong>
+							<div class="img_wrap">
+								<img src="images/brand4.png" alt="Micro Gaming">
+							</div>
+							<div class="contents_wrap">
+								<strong>스피드바카라</strong><span>마이크로게이밍</span>
+							</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="swiper-pagination"></div>
+			</div>
+			</section>
+			
+			<!-- Game Sections -->
+			<section class="game_sort">
+			<div class="inner">
+				<!-- Casino Games -->
+				<div class="game_container casino">
+					<h2 class="title_red" id="카지노"><a name="casino">casino</a></h2>
+					<div class="main_game_img_box">
+						<div class="img_wrap img_casinos"></div>
+						<div class="contents_wrap">
+							<strong>라이브 카지노</strong><span>카지노에 오신걸 환영합니다.</span>
+						</div>
+					</div>
+					<div class="row justify-content-center" id="casinoGamesContainer">
+						<div class="loading-spinner">카지노 게임 로딩 중...</div>
+					</div>
+				</div>
+				
+				<!-- Slot Games -->
+				<div class="game_container slot">
+					<h2 class="title_red" id="슬롯"><a name="slot">slot</a></h2>
+					<div class="main_game_img_box slot">
+						<div class="img_wrap img_slots"></div>
+						<div class="contents_wrap">
+							<strong>슬롯게임</strong><span>슬롯게임에 오신걸 환영합니다.</span>
+						</div>
+					</div>
+					<div class="row justify-content-center" id="slotGamesContainer">
+						<div class="loading-spinner">슬롯 게임 로딩 중...</div>
+					</div>
+				</div>
+				
+				<aside class="new_banner">
+					<img src="images/img-banner-bb760898.png" alt="">
+					<div class="contents_wrap">
+						<strong>new game</strong><span>Demo Play</span>
+					</div>
+				</aside>
+				
+				<!-- Sports Games -->
+				<div class="game_container sports">
+					<h2 class="title_red" id="스포츠"><a name="sports">sports</a></h2>
+					<div class="main_game_img_box sports">
+						<div class="img_wrap img_sports"></div>
+						<div class="contents_wrap">
+							<strong>Sports betting</strong><span>스포츠 베팅에 오신걸 환영합니다.</span>
+						</div>
+					</div>
+					<div class="row justify-content-center" id="sportsGamesContainer">
+						<div class="loading-spinner">스포츠 게임 로딩 중...</div>
+					</div>
+				</div>
+			</div>
+			</section>
+			
+			<!-- Footer -->
+			<footer class="new_footer">
+				<div class="partners">
+					<div class="partners_img_wrap">
+						<div class="vue3-marquee horizontal">
+							<div class="transparent-overlay" aria-hidden="true"></div>
+							<div class="marquee">
+								<img src="images/partner_01.png" class="partners-item" alt="Partner List">
+							</div>
+							<div class="marquee" aria-hidden="true">
+								<img src="images/partner_01.png" class="partners-item" alt="Partner List">
+							</div>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+	
+	<!-- Bottom Navigation -->
+	<nav class="fnb">
+		<div class="fnb__list">
+			<ul>
+				<li class="fnb__item user01">
+					<i class="fa fa-bell-o" aria-hidden="true"></i><a href="#" class="fnb__link">공지사항</a>
+				</li>
+				<li class="fnb__item user02">
+					<i class="fa fa-pencil-square-o" aria-hidden="true"></i><a href="#" class="fnb__link">고객센터</a>
+				</li>
+				<li class="fnb__item user03">
+					<i class="fa fa-plus-square-o" aria-hidden="true"></i><a href="#" class="fnb__link">입금신청</a>
+				</li>
+				<li class="fnb__item user04">
+					<i class="fa fa-minus-square-o" aria-hidden="true"></i><a href="#" class="fnb__link">출금신청</a>
+				</li>
+			</ul>
+		</div>
+		<a href="./mypage.html" class="fnb__button"></a>
+	</nav>
+	<div class="quick-menu visible">
+		<a href="#app"><button type="button" class="button-to-top"></button></a>
+	</div>
+</div>
+
+<!-- JS文件引用 - 使用相对路径 -->
+<script src="js/jquery.min_1.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/swiper-bundle.min.js"></script>
+<script src="js/effect-carousel.min.js"></script>
+<script src="js/main.js"></script>
+
+<script>
+$(document).ready(function() {
+    // 전역 변수
+    const API_BASE = 'https://zuserapi.ampj998.top';
+    const IMAGE_BASE = 'https://cg9898.com';  // 图片基础域名
+    let currentUser = null;
+    let systemConfig = null;
+    let gameData = {
+        casino: [],
+        slot: [],
+        sports: [],
+        hot: []
+    };
+    
+    // 앱 초기화
+    initApp();
+    
+    async function initApp() {
+        console.log('앱 초기화 시작...');
+        try {
+            await loadSystemConfig();
+            await checkLoginStatus();
+            await loadGamesData();
+            console.log('앱 초기화 완료');
+        } catch (error) {
+            console.error('앱 초기화 실패:', error);
+            showLoginMenu();
+        }
+    }
+    
+    // 시스템 설정 로드
+    async function loadSystemConfig() {
+        try {
+            const currentUrl = encodeURIComponent(window.location.origin + '/');
+            const configUrl = `${API_BASE}/config/sys_config?group=system&is_mobile=1&url=${currentUrl}&lang=ko-KR`;
+            
+            console.log('시스템 설정 로드 중...', configUrl);
+            
+            const response = await fetch(configUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            console.log('시스템 설정 응답:', data);
+            
+            if (data.code === 200) {
+                systemConfig = data.data;
+                
+                if (systemConfig.group_prefix) {
+                    localStorage.setItem('group_prefix', systemConfig.group_prefix);
+                }
+                if (systemConfig.token) {
+                    localStorage.setItem('X-Token', systemConfig.token);
+                }
+                
+                localStorage.setItem('system_config', JSON.stringify(systemConfig));
+                console.log('시스템 설정 로드 성공');
+            }
+        } catch (error) {
+            console.error('시스템 설정 로드 오류:', error);
+        }
+    }
+    
+    // 공통 헤더 생성
+    function getCommonHeaders() {
+        const accessToken = localStorage.getItem('access_token');
+        const xToken = localStorage.getItem('X-Token');
+        const groupPrefix = localStorage.getItem('group_prefix');
+        
+        const headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        };
+        
+        if (accessToken) {
+            headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+        if (xToken) {
+            headers['X-Token'] = xToken;
+        }
+        if (groupPrefix) {
+            headers['Group-Prefix'] = groupPrefix;
+        }
+        
+        return headers;
+    }
+    
+    // 완전한 이미지 URL 생성
+    function getFullImageUrl(imgPath) {
+        if (!imgPath) return 'images/default-game.png';
+        
+        if (imgPath.startsWith('http://') || imgPath.startsWith('https://')) {
+            return imgPath;
+        }
+        
+        if (imgPath.startsWith('/')) {
+            return IMAGE_BASE + imgPath;
+        }
+        
+        return 'images/default-game.png';
+    }
+    
+    // 로그인 상태 확인
+    async function checkLoginStatus() {
+        const accessToken = localStorage.getItem('access_token');
+        const xToken = localStorage.getItem('X-Token');
+        
+        if (!accessToken || !xToken) {
+            console.log('미로그인 상태');
+            showLoginMenu();
+            return;
+        }
+        
+        try {
+            const headers = getCommonHeaders();
+            const response = await fetch(`${API_BASE}/user/user_info?lang=ko-KR&is_mobile=1`, {
+                method: 'GET',
+                headers: headers
+            });
+            
+            const data = await response.json();
+            
+            if (data.code === 200) {
+                currentUser = data.data;
+                localStorage.setItem('current_user', JSON.stringify(currentUser));
+                showLoggedInMenu();
+                console.log('사용자 로그인 확인:', currentUser.name);
+            } else {
+                clearAuthData();
+                showLoginMenu();
+            }
+        } catch (error) {
+            console.error('로그인 상태 확인 실패:', error);
+            clearAuthData();
+            showLoginMenu();
+        }
+    }
+    
+    // 게임 데이터 로드
+    async function loadGamesData() {
+        console.log('게임 데이터 로드 시작...');
+        
+        const headers = getCommonHeaders();
+        
+        try {
+            const requests = [
+                fetch(`${API_BASE}/game/game_hot_list?lang=ko-KR&page=1&limit=20`, { 
+                    method: 'GET',
+                    headers: headers 
+                }),
+                fetch(`${API_BASE}/game/game_list?lang=ko-KR&game_type=LIVE&page=1&limit=100`, { 
+                    method: 'GET',
+                    headers: headers 
+                }),
+                fetch(`${API_BASE}/game/game_list?lang=ko-KR&game_type=SLOTS&page=1&limit=100`, { 
+                    method: 'GET',
+                    headers: headers 
+                }),
+                fetch(`${API_BASE}/game/game_list?lang=ko-KR&game_type=SPORTS&page=1&limit=100`, { 
+                    method: 'GET',
+                    headers: headers 
+                })
+            ];
+            
+            const [hotResponse, casinoResponse, slotResponse, sportsResponse] = await Promise.all(requests);
+            
+            await processApiResponse(hotResponse, 'hot', '인기 게임');
+            await processApiResponse(casinoResponse, 'casino', '카지노 게임');
+            await processApiResponse(slotResponse, 'slot', '슬롯 게임');
+            await processApiResponse(sportsResponse, 'sports', '스포츠 게임');
+            
+            renderHotGames();
+            renderAllGames();
+            
+            console.log('게임 데이터 로드 완료');
+            
+        } catch (error) {
+            console.error('게임 데이터 로드 실패:', error);
+            renderDefaultContent();
+        }
+    }
+    
+    // API 응답 처리
+    async function processApiResponse(response, dataKey, gameName) {
+        try {
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    gameData[dataKey] = data.data?.list || data.data || [];
+                    console.log(`${gameName} 로드 성공:`, gameData[dataKey].length);
+                } else {
+                    gameData[dataKey] = [];
+                }
+            } else {
+                gameData[dataKey] = [];
+            }
+        } catch (error) {
+            console.error(`${gameName} 처리 오류:`, error);
+            gameData[dataKey] = [];
+        }
+    }
+    
+    // 인기 게임 렌더링
+    function renderHotGames() {
+        const container = document.getElementById('hotGamesContainer');
+        if (!container) return;
+        
+        if (gameData.hot.length === 0) {
+            container.innerHTML = '<div class="no-games">인기 게임이 없습니다</div>';
+            return;
+        }
+        
+        const swiperWrapper = document.createElement('div');
+        swiperWrapper.className = 'swiper-wrapper';
+        
+        const gamesPerSlide = 4;
+        for (let i = 0; i < gameData.hot.length; i += gamesPerSlide) {
+            const slideGames = gameData.hot.slice(i, i + gamesPerSlide);
+            const slide = createHotGameSlide(slideGames);
+            swiperWrapper.appendChild(slide);
+        }
+        
+        const pagination = document.createElement('div');
+        pagination.className = 'swiper-pagination';
+        
+        container.innerHTML = '';
+        container.appendChild(swiperWrapper);
+        container.appendChild(pagination);
+        
+        setTimeout(() => {
+            if (typeof Swiper !== 'undefined') {
+                new Swiper(".hotSwiper", {
+                    slidesPerView: 1,
+                    grid: { rows: 1 },
+                    spaceBetween: 10,
+                    pagination: {
+                        el: ".hotSwiper .swiper-pagination",
+                        clickable: true,
+                    },
+                });
+            }
+        }, 100);
+    }
+    
+    // 인기 게임 슬라이드 생성
+    function createHotGameSlide(games) {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        
+        const ul = document.createElement('ul');
+        
+        games.forEach(game => {
+            const li = document.createElement('li');
+            li.className = 'game-card';
+            
+            const gameImageUrl = getFullImageUrl(game.img_url || game.game_img_url);
+            
+            li.innerHTML = `
+                <div class="img_wrap">
+                    <img src="${gameImageUrl}" 
+                         alt="${game.game_code}" 
+                         onerror="this.onerror=null; this.src='images/default-game.png'">
+                </div>
+                <strong>${game.game_name || '게임'}</strong>
+                <span>${game.supplier_code || ''}</span>
+            `;
+            
+            li.style.cursor = 'pointer';
+            li.addEventListener('click', function() {
+                if (game.is_can_run === 1) {
+                    launchGame(game.game_code, game.supplier_code, game.id);
+                } else {
+                    showGameUnavailable();
+                }
+            });
+            
+            ul.appendChild(li);
+        });
+        
+        slide.appendChild(ul);
+        return slide;
+    }
+    
+    // 모든 게임 렌더링
+    function renderAllGames() {
+        renderGamesSection('casinoGamesContainer', gameData.casino, 'casino');
+        renderGamesSection('slotGamesContainer', gameData.slot, 'slot');
+        renderGamesSection('sportsGamesContainer', gameData.sports, 'sports');
+    }
+    
+    // 게임 섹션 렌더링
+    function renderGamesSection(containerId, games, type) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        if (games.length === 0) {
+            container.innerHTML = '<div class="no-games">게임이 없습니다</div>';
+            return;
+        }
+        
+        const gameElements = games.slice(0, 20).map(game => createGameElement(game, type));
+        container.innerHTML = gameElements.join('');
+    }
+    
+    // 게임 요소 생성 - 개선된 버전
+    function createGameElement(game, type) {
+        const gameImg = getFullImageUrl(game.img_url || game.game_img_url);
+        const isCanRun = game.is_can_run === 1;
+        const gameName = game.game_name || game.game_code || '알 수 없는 게임';
+        const supplierCode = game.supplier_code || '';
+        const gameId = game.id || '1';
+        
+        // 供应商logo处理 - 如果没有就显示文字
+        const logoSection = game.supplier_logo 
+            ? `<img src="${getFullImageUrl(game.supplier_logo)}" 
+                    onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    alt="${supplierCode}">
+               <h2 style="display:none;">${supplierCode || gameName}</h2>`
+            : `<h2>${supplierCode || gameName}</h2>`;
+        
+        return `
+            <a href="#" class="slot-btn game-card ${!isCanRun ? 'auth-required' : ''}" 
+               onclick="event.preventDefault(); ${isCanRun ? `launchGame('${game.game_code}', '${supplierCode}', '${gameId}')` : 'showGameUnavailable()'}; return false;">
+                <div class="g-panel w-ba">
+                    <div class="g-cont w-ba">
+                        <img class="g-glow" src="images/slot-glow.png" 
+                             onerror="this.onerror=null; this.style.display='none';">
+                        <div class="g-inner">
+                            <img class="g-img" src="${gameImg}" 
+                                 onerror="this.onerror=null; this.src='images/default-game.png'">
+                            <button class="play-btn w-b">${isCanRun ? '게임입장' : '준비중'}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="g-logo dflex-ac-jc">
+                    ${logoSection}
+                </div>
+                <span class="g-name">${gameName}</span>
+            </a>
+        `;
+    }
+    
+    // 게임 실행
+    window.launchGame = function(gameCode, supplierCode, supplierId) {
+        console.log('게임 실행:', { gameCode, supplierCode, supplierId });
+        
+        if (!currentUser) {
+            alert('로그인이 필요합니다.');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const gameUrl = `/to_game.html?game_code=${gameCode}&supplier_code=${supplierCode}&supplier_id=${supplierId || '1'}`;
+        window.open(gameUrl, '_blank');
+    };
+    
+    // 게임 이용 불가
+    window.showGameUnavailable = function() {
+        alert('현재 이 게임은 이용할 수 없습니다.');
+    };
+    
+    // 기본 콘텐츠 렌더링
+    function renderDefaultContent() {
+        console.log('기본 콘텐츠 렌더링');
+        
+        const defaultCasino = `
+            <a href="#" class="slot-btn" onclick="showGameUnavailable(); return false;">
+                <div class="g-panel w-ba">
+                    <div class="g-cont w-ba">
+                        <img class="g-glow" src="images/slot-glow.png">
+                        <div class="g-inner">
+                            <img class="g-img" src="images/evolution.png" 
+                                 onerror="this.onerror=null; this.src='images/default-game.png';">
+                            <button class="play-btn w-b">게임입장</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="g-logo dflex-ac-jc">
+                    <h2>에볼루션 카지노</h2>
+                </div>
+                <span class="g-name">에볼루션 카지노</span>
+            </a>
+        `;
+        
+        const defaultSlot = `
+            <a href="#" class="slot-btn" onclick="showGameUnavailable(); return false;">
+                <div class="g-panel w-ba">
+                    <div class="g-cont w-ba">
+                        <img class="g-glow" src="images/slot-glow.png">
+                        <div class="g-inner">
+                            <img class="g-img" src="images/1_slot.png" 
+                                 onerror="this.onerror=null; this.src='images/default-game.png';">
+                            <button class="play-btn w-b">게임입장</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="g-logo dflex-ac-jc">
+                    <h2>프라그마틱 슬롯</h2>
+                </div>
+                <span class="g-name">프라그마틱 슬롯</span>
+            </a>
+        `;
+        
+        const defaultSports = `
+            <a href="#" class="slot-btn" onclick="showGameUnavailable(); return false;">
+                <div class="g-panel w-ba">
+                    <div class="g-cont w-ba">
+                        <img class="g-glow" src="images/slot-glow.png">
+                        <div class="g-inner">
+                            <img class="g-img" src="images/1_sports.png" 
+                                 onerror="this.onerror=null; this.src='images/default-game.png';">
+                            <button class="play-btn w-b">게임입장</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="g-logo dflex-ac-jc">
+                    <h2>축구</h2>
+                </div>
+                <span class="g-name">축구 베팅</span>
+            </a>
+        `;
+        
+        const casinoContainer = document.getElementById('casinoGamesContainer');
+        const slotContainer = document.getElementById('slotGamesContainer');
+        const sportsContainer = document.getElementById('sportsGamesContainer');
+        
+        if (casinoContainer) casinoContainer.innerHTML = defaultCasino;
+        if (slotContainer) slotContainer.innerHTML = defaultSlot;
+        if (sportsContainer) sportsContainer.innerHTML = defaultSports;
+    }
+    
+    // 로그인 메뉴 표시
+    function showLoginMenu() {
+        document.getElementById('loginMenu').style.display = 'block';
+        document.getElementById('loggedInMenu').style.display = 'none';
+    }
+    
+    // 로그인된 메뉴 표시
+    function showLoggedInMenu() {
+        document.getElementById('loginMenu').style.display = 'none';
+        document.getElementById('loggedInMenu').style.display = 'block';
+        
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || '사용자';
+            document.getElementById('userBalance').textContent = formatMoney(currentUser.money || 0);
+            document.getElementById('userMileage').textContent = formatMoney(currentUser.mileage || 0);
+            
+            const rootDomain = getRootDomain();
+            const xToken = localStorage.getItem('X-Token');
+            const userCenterUrl = `https://userh5.${rootDomain}/?lang=ko-KR&token=${xToken}`;
+            
+            document.getElementById('userNameLink').href = userCenterUrl;
+            document.getElementById('personalCenterBtn').href = userCenterUrl;
+        }
+    }
+    
+    // 루트 도메인 가져오기
+    function getRootDomain() {
+        const hostname = window.location.hostname;
+        const parts = hostname.split('.');
+        
+        if (hostname === 'localhost' || /^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+            return hostname;
+        }
+        
+        if (parts.length >= 2) {
+            return parts.slice(-2).join('.');
+        }
+        
+        return hostname;
+    }
+    
+    // 금액 포맷팅
+    function formatMoney(amount) {
+        return parseFloat(amount || 0).toLocaleString();
+    }
+    
+    // 인증 데이터 삭제
+    function clearAuthData() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('X-Token');
+        localStorage.removeItem('current_user');
+        localStorage.removeItem('group_prefix');
+        currentUser = null;
+    }
+    
+    // 로그아웃 처리
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (confirm('로그아웃 하시겠습니까?')) {
+                const headers = getCommonHeaders();
+                
+                if (localStorage.getItem('access_token')) {
+                    fetch(`${API_BASE}/user/out?lang=ko-KR&is_mobile=1`, {
+                        method: 'POST',
+                        headers: headers
+                    }).finally(() => {
+                        performLogout();
+                    });
+                } else {
+                    performLogout();
+                }
+            }
+        });
+    }
+    
+    function performLogout() {
+        clearAuthData();
+        showLoginMenu();
+        window.location.reload();
+    }
+    
+    // 사용자 정보 정기 업데이트
+    setInterval(async function() {
+        if (currentUser && localStorage.getItem('access_token')) {
+            try {
+                const headers = getCommonHeaders();
+                const response = await fetch(`${API_BASE}/user/user_info?lang=ko-KR&is_mobile=1`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                
+                const data = await response.json();
+                
+                if (data.code === 200) {
+                    currentUser = data.data;
+                    localStorage.setItem('current_user', JSON.stringify(currentUser));
+                    
+                    const balanceEl = document.getElementById('userBalance');
+                    const mileageEl = document.getElementById('userMileage');
+                    
+                    if (balanceEl) balanceEl.textContent = formatMoney(currentUser.money || 0);
+                    if (mileageEl) mileageEl.textContent = formatMoney(currentUser.mileage || 0);
+                }
+            } catch (error) {
+                console.error('사용자 정보 업데이트 실패:', error);
+            }
+        }
+    }, 30000);
+    
+    // Bootstrap 모달 처리
+    $(document).on('show.bs.modal hidden.bs.modal', function() {
+        $('body').css('padding-right', '');
+    });
+    
+    // 브랜드 Swiper 초기화
+    setTimeout(() => {
+        if (typeof Swiper !== 'undefined') {
+            new Swiper(".brandSwiper", {
+                slidesPerView: 1,
+                grid: { rows: 1 },
+                spaceBetween: 10,
+                pagination: {
+                    el: ".brandSwiper .swiper-pagination",
+                    clickable: true,
+                },
+            });
+        }
+    }, 500);
+});
+</script>
+
+</body>
+</html>

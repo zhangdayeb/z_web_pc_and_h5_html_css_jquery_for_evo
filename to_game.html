@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 시작</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #8B0000 100%);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .game-container {
+            background: #000;
+            border: 2px solid #8B0000;
+            border-radius: 10px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+            text-align: center;
+        }
+        
+        .logo {
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #ff0000;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .user-info {
+            background: #1a1a1a;
+            border: 1px solid #8B0000;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        
+        .user-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .user-balance {
+            font-size: 14px;
+            color: #ff0000;
+        }
+        
+        .btn-game {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(45deg, #8B0000, #ff0000);
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-game:hover {
+            background: linear-gradient(45deg, #ff0000, #8B0000);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        .btn-logout {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid #8B0000;
+            border-radius: 5px;
+            color: #8B0000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .btn-logout:hover {
+            background: #8B0000;
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top: 3px solid #ff0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .game-container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="logo">
+            <h1>게임 플레이</h1>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-name" id="userName">사용자</div>
+            <div class="user-balance">잔액: <span id="userBalance">0</span>원</div>
+        </div>
+        
+        <button class="btn-game" id="startGameBtn">게임 시작하기</button>
+        <a href="login.html" class="btn-logout" id="logoutBtn">로그아웃</a>
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <script>
+        // 페이지 로드 시 사용자 정보 확인
+        window.addEventListener('load', function() {
+            const userToken = localStorage.getItem('user_token');
+            const userInfo = localStorage.getItem('user_info');
+            
+            if (!userToken || !userInfo) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userInfo);
+                document.getElementById('userName').textContent = user.name || '사용자';
+                document.getElementById('userBalance').textContent = formatNumber(user.money || 0);
+            } catch (e) {
+                console.error('사용자 정보 파싱 오류:', e);
+            }
+        });
+        
+        // 게임 시작 버튼
+        document.getElementById('startGameBtn').addEventListener('click', function() {
+            const userToken = localStorage.getItem('user_token');
+            
+            if (!userToken) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            if (!confirm('게임을 시작하시겠습니까?')) {
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            
+            // 게임 URL 요청
+            fetch('/game/game_url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer ' + userToken
+                },
+                body: 'vendor_key=evolution&game_key=live_casino'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.code === 200 && data.data.game_url) {
+                    // 게임 URL로 직접 이동
+                    window.location.href = data.data.game_url;
+                } else {
+                    alert(data.msg || '게임 시작에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                alert('게임 서버에 연결할 수 없습니다.');
+            });
+        });
+        
+        // 로그아웃 버튼
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (confirm('로그아웃 하시겠습니까?')) {
+                const userToken = localStorage.getItem('user_token');
+                
+                // 로그아웃 API 호출 (선택적)
+                fetch('/user/out', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + userToken
+                    }
+                }).finally(() => {
+                    localStorage.removeItem('user_token');
+                    localStorage.removeItem('user_info');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+        
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+    </script>
+</body>
+</html>

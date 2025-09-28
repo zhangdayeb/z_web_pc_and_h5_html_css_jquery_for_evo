@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+    <path style="fill:none" d="M0 0h20v20H0z"/>
+    <g data-name="그룹 162400">
+        <path data-name="선 62" transform="translate(4 4)" style="stroke:#111;stroke-linecap:round;stroke-width:2px;fill:none" d="m0 0 12 12"/>
+        <path data-name="선 63" transform="rotate(90 6 10)" style="stroke:#111;stroke-linecap:round;stroke-width:2px;fill:none" d="m0 0 12 12"/>
+    </g>
+</svg>
