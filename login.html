@@ -12,22 +12,23 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #8B0000 100%);
-            font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1a1a;
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
         
         .login-container {
-            background: #000;
-            border: 2px solid #8B0000;
+            background: #2a2a2a;
             border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             padding: 40px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+            margin: 20px;
+            border: 1px solid #333;
         }
         
         .logo {
@@ -36,9 +37,12 @@
         }
         
         .logo h1 {
-            color: #ff0000;
+            color: #fff;
             font-size: 28px;
-            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff0000, #8B0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .form-group {
@@ -47,16 +51,17 @@
         
         .form-control {
             width: 100%;
-            padding: 15px;
+            padding: 12px 15px;
             background: #1a1a1a;
-            border: 1px solid #8B0000;
+            border: 1px solid #444;
             border-radius: 5px;
             color: #fff;
-            font-size: 16px;
-            outline: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
         
         .form-control:focus {
+            outline: none;
             border-color: #ff0000;
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
         }
@@ -83,6 +88,11 @@
             background: linear-gradient(45deg, #ff0000, #8B0000);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .btn-register {
@@ -143,6 +153,10 @@
             }
         }
     </style>
+    <!-- 引入 jQuery -->
+    <script src="./js/jquery.min.js"></script>
+    <!-- 引入配置文件 -->
+    <script src="./js/conf.js"></script>
 </head>
 <body>
     <div class="login-container">
@@ -152,14 +166,14 @@
         
         <form id="loginForm">
             <div class="form-group">
-                <input type="text" class="form-control" id="username" placeholder="사용자명" required>
+                <input type="text" class="form-control" id="name" name="name" placeholder="사용자명" required>
             </div>
             
             <div class="form-group">
-                <input type="password" class="form-control" id="password" placeholder="비밀번호" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호" required>
             </div>
             
-            <button type="submit" class="btn-login">로그인</button>
+            <button type="submit" class="btn-login" id="submitBtn">로그인</button>
             <a href="register.html" class="btn-register">회원가입</a>
         </form>
     </div>
@@ -169,45 +183,80 @@
     </div>
     
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+    $(document).ready(function() {
+        // 폼 제출 처리
+        $('#loginForm').on('submit', function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
+            // 입력값 가져오기
+            const name = $('#name').val().trim();
+            const password = $('#password').val();
             
-            if (!username || !password) {
+            // 기본 검증
+            if (!name || !password) {
                 alert('사용자명과 비밀번호를 입력하세요.');
                 return;
             }
             
-            document.getElementById('loading').style.display = 'block';
+            // 로딩 표시
+            $('#loading').show();
+            $('#submitBtn').prop('disabled', true);
             
-            fetch('/user/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+            // AJAX 요청
+            $.ajax({
+                url: base_url + '/user/login',
+                type: 'POST',
+                data: {
+                    name: name,
+                    password: password
                 },
-                body: `name=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading').style.display = 'none';
-                
-                if (data.code === 200) {
-                    if (data.data.simple_token) {
-                        localStorage.setItem('user_token', data.data.simple_token);
+                dataType: 'json',
+                success: function(response) {
+                    $('#loading').hide();
+                    $('#submitBtn').prop('disabled', false);
+                    
+                    if (response.code === 200 || response.code === 0) {
+                        // Simple Token 저장
+                        if (response.data && response.data.simple_token) {
+                            localStorage.setItem('token', response.data.simple_token);
+                        } else if (response.data && response.data.x_token) {
+                            localStorage.setItem('token', response.data.x_token);
+                        }
+                        
+                        // 사용자 정보 저장
+                        if (response.data && response.data.user_info) {
+                            localStorage.setItem('user', JSON.stringify(response.data.user_info));
+                        }
+                        
+                        alert('로그인 성공!');
+                        // 메인 페이지로 이동
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(response.msg || '로그인 실패');
                     }
-                    localStorage.setItem('user_info', JSON.stringify(data.data.user));
-                    window.location.href = 'to_game.html';
-                } else {
-                    alert(data.msg || '로그인 실패');
+                },
+                error: function(xhr, status, error) {
+                    $('#loading').hide();
+                    $('#submitBtn').prop('disabled', false);
+                    console.error('Login error:', error);
+                    
+                    // 응답이 있는 경우 처리
+                    if (xhr.responseJSON && xhr.responseJSON.msg) {
+                        alert(xhr.responseJSON.msg);
+                    } else {
+                        alert('서버 연결 실패. 다시 시도해주세요.');
+                    }
                 }
-            })
-            .catch(error => {
-                document.getElementById('loading').style.display = 'none';
-                alert('서버 연결 실패');
             });
         });
+        
+        // 이미 로그인되어 있는지 확인
+        const token = localStorage.getItem('token');
+        if (token) {
+            // 토큰이 있으면 메인 페이지로 이동
+            window.location.href = 'index.html';
+        }
+    });
     </script>
 </body>
 </html>

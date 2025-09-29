@@ -12,23 +12,23 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #8B0000 100%);
-            font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1a1a;
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 20px;
+            align-items: center;
         }
         
         .register-container {
-            background: #000;
-            border: 2px solid #8B0000;
+            background: #2a2a2a;
             border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             padding: 40px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+            margin: 20px;
+            border: 1px solid #333;
         }
         
         .logo {
@@ -37,9 +37,12 @@
         }
         
         .logo h1 {
-            color: #ff0000;
+            color: #fff;
             font-size: 28px;
-            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff0000, #8B0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .form-group {
@@ -48,16 +51,17 @@
         
         .form-control {
             width: 100%;
-            padding: 15px;
+            padding: 12px 15px;
             background: #1a1a1a;
-            border: 1px solid #8B0000;
+            border: 1px solid #444;
             border-radius: 5px;
             color: #fff;
-            font-size: 16px;
-            outline: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
         
         .form-control:focus {
+            outline: none;
             border-color: #ff0000;
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
         }
@@ -90,6 +94,11 @@
             background: linear-gradient(45deg, #ff0000, #8B0000);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+        
+        .btn-register:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .btn-login {
@@ -145,11 +154,15 @@
         
         @media (max-width: 480px) {
             .register-container {
-                margin: 10px;
+                margin: 20px;
                 padding: 30px 20px;
             }
         }
     </style>
+    <!-- 引入 jQuery -->
+    <script src="./js/jquery.min.js"></script>
+    <!-- 引入配置文件 -->
+    <script src="./js/conf.js"></script>
 </head>
 <body>
     <div class="register-container">
@@ -159,29 +172,29 @@
         
         <form id="registerForm">
             <div class="form-group">
-                <input type="text" class="form-control" id="username" placeholder="사용자명" required>
-                <div class="form-help">4-20자 영문, 숫자만 가능</div>
+                <input type="text" class="form-control" id="name" name="name" placeholder="사용자명" required>
+                <div class="form-help">4-20자의 영문, 숫자, 밑줄</div>
             </div>
             
             <div class="form-group">
-                <input type="password" class="form-control" id="password" placeholder="비밀번호" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호" required>
                 <div class="form-help">최소 6자 이상</div>
             </div>
             
             <div class="form-group">
-                <input type="password" class="form-control" id="password_confirm" placeholder="비밀번호 확인" required>
+                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="비밀번호 확인" required>
             </div>
             
             <div class="form-group">
-                <input type="password" class="form-control" id="withdraw_pwd" placeholder="출금비밀번호" maxlength="4" required>
-                <div class="form-help">4자리 숫자</div>
+                <input type="password" class="form-control" id="qk_pwd" name="qk_pwd" placeholder="출금비밀번호" required>
+                <div class="form-help">최소 6자 이상</div>
             </div>
             
             <div class="form-group">
-                <input type="text" class="form-control" id="invitation_code" placeholder="추천인 코드 (선택사항)">
+                <input type="text" class="form-control" id="invitation_code" name="invitation_code" placeholder="추천인 코드 (선택사항)">
             </div>
             
-            <button type="submit" class="btn-register">회원가입</button>
+            <button type="submit" class="btn-register" id="submitBtn">회원가입</button>
             <a href="login.html" class="btn-login">로그인</a>
         </form>
     </div>
@@ -191,83 +204,87 @@
     </div>
     
     <script>
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+    $(document).ready(function() {
+        // 폼 제출 처리
+        $('#registerForm').on('submit', function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const passwordConfirm = document.getElementById('password_confirm').value.trim();
-            const withdrawPwd = document.getElementById('withdraw_pwd').value.trim();
-            const invitationCode = document.getElementById('invitation_code').value.trim();
-            
             // 기본 검증
-            if (!username || !password || !passwordConfirm || !withdrawPwd) {
+            const name = $('#name').val().trim();
+            const password = $('#password').val();
+            const password_confirmation = $('#password_confirmation').val();
+            const qk_pwd = $('#qk_pwd').val();
+            const invitation_code = $('#invitation_code').val().trim();
+            
+            // 필수 항목 검증
+            if (!name || !password || !password_confirmation || !qk_pwd) {
                 alert('필수 항목을 모두 입력하세요.');
                 return;
             }
             
-            if (password !== passwordConfirm) {
+            // 비밀번호 일치 검증
+            if (password !== password_confirmation) {
                 alert('비밀번호가 일치하지 않습니다.');
                 return;
             }
             
-            if (!/^[a-zA-Z0-9]{4,20}$/.test(username)) {
-                alert('사용자명은 4-20자의 영문, 숫자만 가능합니다.');
-                return;
-            }
-            
+            // 비밀번호 길이 검증
             if (password.length < 6) {
                 alert('비밀번호는 최소 6자 이상이어야 합니다.');
                 return;
             }
             
-            if (!/^\d{4}$/.test(withdrawPwd)) {
-                alert('출금비밀번호는 4자리 숫자여야 합니다.');
+            // 출금비밀번호 길이 검증
+            if (qk_pwd.length < 6) {
+                alert('출금비밀번호는 최소 6자 이상이어야 합니다.');
                 return;
             }
             
-            document.getElementById('loading').style.display = 'block';
+            // 로딩 표시
+            $('#loading').show();
+            $('#submitBtn').prop('disabled', true);
             
-            const formData = new URLSearchParams({
-                name: username,
+            // 폼 데이터 준비
+            const formData = {
+                name: name,
                 password: password,
-                password_confirmation: passwordConfirm,
-                qk_pwd: withdrawPwd,
+                password_confirmation: password_confirmation,
+                qk_pwd: qk_pwd,
                 currency: 'CNY'
-            });
+            };
             
-            if (invitationCode) {
-                formData.append('invitation_code', invitationCode);
+            // 초대코드가 있으면 추가
+            if (invitation_code) {
+                formData.invitation_code = invitation_code;
             }
             
-            fetch('/user/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+            // AJAX 요청
+            $.ajax({
+                url: base_url + '/user/register',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    $('#loading').hide();
+                    $('#submitBtn').prop('disabled', false);
+                    
+                    if (response.code === 200 || response.code === 0) {
+                        alert('회원가입이 완료되었습니다!');
+                        // 로그인 페이지로 이동
+                        window.location.href = 'login.html';
+                    } else {
+                        alert(response.msg || '회원가입 실패');
+                    }
                 },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading').style.display = 'none';
-                
-                if (data.code === 200) {
-                    alert('회원가입이 완료되었습니다!');
-                    window.location.href = 'login.html';
-                } else {
-                    alert(data.msg || '회원가입 실패');
+                error: function(xhr, status, error) {
+                    $('#loading').hide();
+                    $('#submitBtn').prop('disabled', false);
+                    console.error('Registration error:', error);
+                    alert('서버 연결 실패. 다시 시도해주세요.');
                 }
-            })
-            .catch(error => {
-                document.getElementById('loading').style.display = 'none';
-                alert('서버 연결 실패');
             });
         });
-        
-        // 출금비밀번호 숫자만 입력
-        document.getElementById('withdraw_pwd').addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
+    });
     </script>
 </body>
 </html>
