@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게임 시작</title>
+    <title>게임 로딩 중...</title>
     <style>
         * {
             margin: 0;
@@ -12,240 +12,230 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #8B0000 100%);
-            font-family: 'Arial', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1a1a;
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
         
-        .game-container {
-            background: #000;
-            border: 2px solid #8B0000;
-            border-radius: 10px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+        .loading-container {
             text-align: center;
-        }
-        
-        .logo {
-            margin-bottom: 30px;
-        }
-        
-        .logo h1 {
-            color: #ff0000;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .user-info {
-            background: #1a1a1a;
-            border: 1px solid #8B0000;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 30px;
             color: #fff;
-        }
-        
-        .user-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .user-balance {
-            font-size: 14px;
-            color: #ff0000;
-        }
-        
-        .btn-game {
-            width: 100%;
-            padding: 20px;
-            background: linear-gradient(45deg, #8B0000, #ff0000);
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-game:hover {
-            background: linear-gradient(45deg, #ff0000, #8B0000);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
-        }
-        
-        .btn-logout {
-            width: 100%;
-            padding: 15px;
-            background: transparent;
-            border: 2px solid #8B0000;
-            border-radius: 5px;
-            color: #8B0000;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: block;
-        }
-        
-        .btn-logout:hover {
-            background: #8B0000;
-            color: #fff;
-            text-decoration: none;
-        }
-        
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
         }
         
         .loading-spinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border: 3px solid #333;
-            border-top: 3px solid #ff0000;
+            width: 60px;
+            height: 60px;
+            border: 4px solid #333;
+            border-top: 4px solid #ff0000;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
         
         @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
-        @media (max-width: 480px) {
-            .game-container {
-                margin: 20px;
-                padding: 30px 20px;
-            }
+        .loading-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .loading-subtext {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .error-container {
+            display: none;
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 48px;
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-home {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #8B0000, #ff0000);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+        
+        .btn-home:hover {
+            transform: translateY(-2px);
         }
     </style>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/conf.js"></script>
 </head>
 <body>
-    <div class="game-container">
-        <div class="logo">
-            <h1>게임 플레이</h1>
-        </div>
-        
-        <div class="user-info">
-            <div class="user-name" id="userName">사용자</div>
-            <div class="user-balance">잔액: <span id="userBalance">0</span>원</div>
-        </div>
-        
-        <button class="btn-game" id="startGameBtn">게임 시작하기</button>
-        <a href="login.html" class="btn-logout" id="logoutBtn">로그아웃</a>
+    <div class="loading-container" id="loadingContainer">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">게임을 준비하고 있습니다...</div>
+        <div class="loading-subtext">잠시만 기다려 주세요</div>
     </div>
     
-    <div class="loading" id="loading">
-        <div class="loading-spinner"></div>
+    <div class="error-container" id="errorContainer">
+        <div class="error-icon">⚠️</div>
+        <div class="error-message" id="errorMessage">게임을 시작할 수 없습니다</div>
+        <a href="index.html" class="btn-home">메인으로 돌아가기</a>
     </div>
     
     <script>
-        // 페이지 로드 시 사용자 정보 확인
-        window.addEventListener('load', function() {
-            const userToken = localStorage.getItem('user_token');
-            const userInfo = localStorage.getItem('user_info');
-            
-            if (!userToken || !userInfo) {
-                alert('로그인이 필요합니다.');
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            try {
-                const user = JSON.parse(userInfo);
-                document.getElementById('userName').textContent = user.name || '사용자';
-                document.getElementById('userBalance').textContent = formatNumber(user.money || 0);
-            } catch (e) {
-                console.error('사용자 정보 파싱 오류:', e);
-            }
-        });
-        
-        // 게임 시작 버튼
-        document.getElementById('startGameBtn').addEventListener('click', function() {
-            const userToken = localStorage.getItem('user_token');
-            
-            if (!userToken) {
-                alert('로그인이 필요합니다.');
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            if (!confirm('게임을 시작하시겠습니까?')) {
-                return;
-            }
-            
-            document.getElementById('loading').style.display = 'block';
-            
-            // 게임 URL 요청
-            fetch('/game/game_url', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer ' + userToken
-                },
-                body: 'vendor_key=evolution&game_key=live_casino'
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading').style.display = 'none';
-                
-                if (data.code === 200 && data.data.game_url) {
-                    // 게임 URL로 직접 이동
-                    window.location.href = data.data.game_url;
-                } else {
-                    alert(data.msg || '게임 시작에 실패했습니다.');
-                }
-            })
-            .catch(error => {
-                document.getElementById('loading').style.display = 'none';
-                alert('게임 서버에 연결할 수 없습니다.');
-            });
-        });
-        
-        // 로그아웃 버튼
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            if (confirm('로그아웃 하시겠습니까?')) {
-                const userToken = localStorage.getItem('user_token');
-                
-                // 로그아웃 API 호출 (선택적)
-                fetch('/user/out', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + userToken
-                    }
-                }).finally(() => {
-                    localStorage.removeItem('user_token');
-                    localStorage.removeItem('user_info');
-                    window.location.href = 'login.html';
-                });
-            }
-        });
-        
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    $(document).ready(function() {
+        // 获取 URL 参数
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
         }
+        
+        // 显示错误信息
+        function showError(message) {
+            $('#loadingContainer').hide();
+            $('#errorContainer').show();
+            $('#errorMessage').text(message || '게임을 시작할 수 없습니다');
+        }
+        
+        // 自动启动游戏
+        async function autoLaunchGame() {
+            // 1. 检查登录状态
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                showError('로그인이 필요합니다');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return;
+            }
+            
+            // 2. 获取游戏参数
+            const gameCode = getUrlParameter('game_code');
+            const supplierCode = getUrlParameter('supplier_code');
+            const supplierId = getUrlParameter('supplier_id') || '1';
+            
+            if (!gameCode || !supplierCode) {
+                showError('게임 정보가 올바르지 않습니다');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+            
+            console.log('게임 파라미터:', { gameCode, supplierCode, supplierId });
+            
+            // 3. 获取用户信息
+            let user;
+            try {
+                user = JSON.parse(userStr);
+            } catch (e) {
+                showError('사용자 정보를 확인할 수 없습니다');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                return;
+            }
+            
+            // 4. 调用游戏 URL API
+            try {
+                const response = await $.ajax({
+                    url: base_url + '/game/game_url',
+                    type: 'POST',
+                    headers: {
+                        'X-Token': token,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: {
+                        gameCode: gameCode,
+                        api_code: supplierCode,  // 后端期望的参数名
+                        supplier_id: supplierId,
+                        ismobile: 1,  // 移动端标识
+                        lang: 'ko-KR'
+                    }
+                });
+                
+                console.log('API 응답:', response);
+                
+                if (response.code === 200 && response.data && response.data.game_url) {
+                    // 成功获取游戏URL，跳转到游戏
+                    console.log('게임 URL 획득 성공, 이동 중...');
+                    
+                    // 显示跳转提示
+                    $('.loading-text').text('게임으로 이동 중입니다...');
+                    
+                    // 延迟一下再跳转，让用户看到提示
+                    setTimeout(() => {
+                        window.location.href = response.data.game_url;
+                    }, 500);
+                    
+                } else {
+                    // API返回错误
+                    showError(response.msg || '게임을 시작할 수 없습니다');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 3000);
+                }
+                
+            } catch (error) {
+                console.error('게임 URL 요청 실패:', error);
+                
+                // 判断错误类型
+                if (error.status === 401) {
+                    showError('로그인이 만료되었습니다');
+                    setTimeout(() => {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else if (error.responseJSON && error.responseJSON.msg) {
+                    showError(error.responseJSON.msg);
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 3000);
+                } else {
+                    showError('게임 서버에 연결할 수 없습니다');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 3000);
+                }
+            }
+        }
+        
+        // 页面加载后立即执行
+        autoLaunchGame();
+        
+        // 防止用户等待太久，设置超时
+        setTimeout(function() {
+            if ($('#loadingContainer').is(':visible')) {
+                showError('응답 시간이 초과되었습니다');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 3000);
+            }
+        }, 15000);  // 15秒超时
+    });
     </script>
 </body>
 </html>
